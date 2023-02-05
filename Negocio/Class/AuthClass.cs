@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Negocio.DTOs;
@@ -15,14 +16,17 @@ namespace Negocio.Class
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IDataProtector _dataProtector;
 
         public AuthClass(UserManager<IdentityUser> userManager,
             IConfiguration configuration,
-            SignInManager<IdentityUser> signInManager)
+            SignInManager<IdentityUser> signInManager, IDataProtectionProvider dataProtectionProvider)
         {
             _userManager = userManager;
             _configuration = configuration;
             _signInManager = signInManager;
+            //string de propósito, parte de la llave
+            _dataProtector = dataProtectionProvider.CreateProtector("qw_er_ty_az_er_ty");
         }
 
         public async Task<AuthResponse> Login(UserCredentials credentials)

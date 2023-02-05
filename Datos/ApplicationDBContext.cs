@@ -27,6 +27,11 @@ namespace DATOS
             modelBuilder.Entity<GuardadoLibro>().HasKey(x => new { x.GuardadoId, x.LibroId });
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
+
         public DbSet<Autor> Autor { get; set; }
 
         public DbSet<Libro> Libro { get; set; }

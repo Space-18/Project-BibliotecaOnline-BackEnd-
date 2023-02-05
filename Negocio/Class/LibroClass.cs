@@ -146,13 +146,26 @@ namespace Negocio.Class
 
         public async Task<int> Delete(int id)
         {
-            var exist = await _context.Libro.AnyAsync(x => x.Id == id);
+            var exist = await _context.Libro.Include(x=>x.EditorialLibros)
+                .Include(x=>x.AutorLibros)
+                .Include(x=>x.GuardadoLibros)
+                .Include(x=>x.Comentarios)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (!exist) { return 0; }
+            if (exist == null) 
+            {
+                return 0;
+            } 
+            else 
+            {
+                _context.RemoveRange(exist);
+                await _context.SaveChangesAsync();
 
-            _context.Remove(new Libro() { Id = id });
-            await _context.SaveChangesAsync();
-            return id;
+                await _fileStorage.DeleteFile(exist.Portada, contenedor1);
+                await _fileStorage.DeleteFile(exist.Url, contenedor2);
+
+                return id;
+            }
         }
 
         private void Orden(Libro libro)

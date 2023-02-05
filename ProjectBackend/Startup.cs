@@ -1,7 +1,11 @@
-﻿using DATOS;
+﻿using Azure;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using DATOS;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Negocio.Class;
@@ -23,7 +27,7 @@ namespace ProjectBackend
             Configuration = configuration;
         }
 
-        public void ConfigureServices(IServiceCollection Services)
+        public async void ConfigureServices(IServiceCollection Services)
         {
             Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
             Services.AddDbContext<ApplicationDBContext>(
@@ -83,6 +87,8 @@ namespace ProjectBackend
             {
                 x.AddPolicy("Admin", x => x.RequireClaim("admin"));
             });
+
+            Services.AddDataProtection();
 
             Services.AddScoped<ILibro, LibroClass>();
             Services.AddScoped<IAutor, AutorClass>();

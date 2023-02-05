@@ -76,10 +76,13 @@ namespace Negocio.Class
 
         public async Task<int> Delete(int id)
         {
-            var exist = await _context.Autor.AnyAsync(x => x.Id == id);
+            var exist = await _context.Autor.Include(x=>x.AutorLibros).FirstOrDefaultAsync(x => x.Id == id);
 
-            if (!exist)
+            if (exist == null) { return 0; }
+            else if (exist.AutorLibros.Count >= 1)
+            {
                 return 0;
+            }
 
             _context.Remove(new Autor() { Id = id });
             await _context.SaveChangesAsync();

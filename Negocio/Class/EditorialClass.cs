@@ -75,8 +75,12 @@ namespace Negocio.Class
 
         public async Task<int> Delete(int id)
         {
-            var exist = await _context.Editorial.AnyAsync(x => x.Id == id);
-            if (!exist) { return 0; }
+            var exist = await _context.Editorial.Include(x=>x.EditorialLibros).FirstOrDefaultAsync(x => x.Id == id);
+            if (exist == null) { return 0; }
+            else if (exist.EditorialLibros.Count >= 1)
+            {
+                return 0;
+            }
 
             _context.Remove(new Editorial() { Id = id });
             await _context.SaveChangesAsync();
